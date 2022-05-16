@@ -1,0 +1,23 @@
+{
+  "name": "mmm-api",
+  "version": "1.0.0",
+  "description": "MagicMirror-API",
+  "main": "mmm-api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmsBodnar/MMM-API.git"
+  },
+  "author": "tmsBodnar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tmsBodnar/MMM-API/issues"
+  },
+  "homepage": "https://github.com/tmsBodnar/MMM-API#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.16"
+  }
+}
