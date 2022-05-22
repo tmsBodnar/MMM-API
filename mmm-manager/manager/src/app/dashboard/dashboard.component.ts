@@ -1,33 +1,33 @@
-import { Component } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Module } from '../models/Module';
+import { Position } from '../models/Position';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return [
-          { title: 'Card 1', cols: 1, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 },
-          { title: 'Card 4', cols: 1, rows: 1 }
-        ];
-      }
+export class DashboardComponent implements OnChanges {
 
-      return [
-        { title: 'Card 1', cols: 2, rows: 1 },
-        { title: 'Card 2', cols: 1, rows: 1 },
-        { title: 'Card 3', cols: 1, rows: 2 },
-        { title: 'Card 4', cols: 1, rows: 1 }
-      ];
-    })
-  );
+  @Input()
+  modules: Module[] = [];
+  isPositionCalculated = false;
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  constructor() {}
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+    if (changes['modules']) {
+      console.log('modules changed');
+      this.calculatePositions();
+    }
+  }
+  calculatePositions(){
+    this.modules.forEach(module => {
+      
+      const pos = Position.positions.filter(p => p.name === module.position);
+      module['pos'] = pos[0];
+      console.log(module);
+    });
+    this.isPositionCalculated = true;
+  }
 }

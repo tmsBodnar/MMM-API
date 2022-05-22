@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { Config } from '../models/Config';
+import { Module } from '../models/Module';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 
 @Component({
   selector: 'app-navigation',
@@ -11,24 +13,27 @@ import { Config } from '../models/Config';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent {
-
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
-    .pipe(
-      map(result => result.matches),
-      shareReplay()
-    );
+  .pipe(
+    map(result => result.matches),
+    shareReplay()
+  );
 
-    conf!: Config;
+    config: Config;
+    modules : Module[] = [];
 
-  constructor(private breakpointObserver: BreakpointObserver,
-    private apiService: ApiService) {}
+    @ViewChild('dashboard')
+    dashboard: DashboardComponent
+
+  constructor(private breakpointObserver: BreakpointObserver, private apiService: ApiService) {}
 
   onSaveClicked(){
     console.log("save clicked");
   }
-  onLoadClicked(){
-    let result = this.apiService.getModules().subscribe(cf => console.log(cf));
-    
+  async onLoadClicked(){
+    this.config = await lastValueFrom(this.apiService.getModules());
+    this.modules = this.config.modules;
+    this.dashboard.modules = this.modules;
   }
   onResetClicked(){
     console.log("reset clicked");

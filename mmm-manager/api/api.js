@@ -17,17 +17,17 @@ app.get('/api', (req, res) => {
 })
 
 app.get('/api/config', (req, res) => {
-  configJSON = fs.readFileSync(configPath, 'utf8'); 
-  const r = configJSON.slice(configJSON.indexOf('{'), configJSON.length);
-  console.log(r);
-  res.send(r);
+  const readedConfig = fs.readFileSync(configPath, 'utf8'); 
+  const jsonConfig = readedConfig.slice(readedConfig.indexOf('{'), readedConfig.length);
+  console.log(jsonConfig);
+  res.send(jsonConfig);
 })
 
 app.put('/api/config', (req, res) => {
-  let conf = req.body;
-  fs.writeFileSync(configPath, 'let config = ' + JSON.stringify(conf) , 'utf-8')
+  let config = req.body;
+  fs.writeFileSync(configPath, 'let config = ' + JSON.stringify(config) , 'utf-8')
   fs.readFile(configPath, (err, data) => {
     res.send(data);
   })
-  
+
 });
