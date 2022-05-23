@@ -1,21 +1,68 @@
 .grid-container {
   margin: 20px;
 }
-
-.dashboard-card {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-}
-
 .more-button {
   position: absolute;
   top: 5px;
   right: 10px;
 }
 
-.dashboard-card-content {
+.top_bar{
+  top: 0;
+  width: 100%;
   text-align: center;
+}
+.top_left {
+  top: 100%;
+  text-align: left;
+}
+.top_center {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.top_right {
+  top: 100%;
+  right: 0;
+  text-align: right;
+}
+.upper_third {
+  top: 33%;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+.middle_center {
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+.lower_third {
+  top: 66%;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+.bottom_bar{
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+.bottom_left {
+  bottom: 100%;
+  text-align: left;
+}
+.bottom_center {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.bottom_right {
+  bottom: 100%;
+  right: 0;
+  text-align: right;
+}
+:host::ng-deep .mat-grid-tile-content{
+  display: block !important;
 }

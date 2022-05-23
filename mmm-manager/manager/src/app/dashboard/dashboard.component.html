@@ -1,10 +1,10 @@
 <div class="grid-container" *ngIf="isPositionCalculated">
-  <mat-grid-list cols="3"  rowHeight="350px">
-    <mat-grid-tile *ngFor="let module of modules" [colspan]="module.pos.colspan">
-      <mat-card class="dashboard-card">
+  <mat-grid-list cols="3">
+    <mat-grid-tile *ngFor="let position of positions" [colspan]="position.colspan">
+      <mat-card class="position.name">
         <mat-card-header>
           <mat-card-title>
-            {{module.module}}
+            {{position.name}}
             <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -15,7 +15,7 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <div>{{module.position}}</div>
+          <div>content</div>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

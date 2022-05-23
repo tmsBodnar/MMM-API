@@ -12,6 +12,7 @@ export class DashboardComponent implements OnChanges {
   @Input()
   modules: Module[] = [];
   isPositionCalculated = false;
+  positions: Position[] = Position.positions;
 
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
