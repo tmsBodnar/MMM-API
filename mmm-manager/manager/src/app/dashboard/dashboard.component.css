@@ -1,5 +1,6 @@
 .grid-container {
   margin: 20px;
+ 
 }
 .drag-button {
   position: absolute;
@@ -69,8 +70,8 @@
   display: block !important;
 }
 :host::ng-deep .mat-card{
-  height: 65% !important;
-  margin: 10px !important;
-  width: 80% !important;
+  height: fit-content;
 }
-
+.drag-icon{
+  transform: scale(0.8);
+}

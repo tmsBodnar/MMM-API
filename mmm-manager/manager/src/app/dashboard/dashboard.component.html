@@ -4,9 +4,7 @@
     <mat-grid-tile *ngFor="let position of positions" [colspan]="position.colspan">
       <mat-card class="position.name">
         <mat-card-header>
-          <mat-card-title>
             {{position.name}}
-          </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
           <mat-selection-list [multiple]="false">
@@ -14,8 +12,8 @@
               <div>{{module.module}}</div>
               <div>
                 <button mat-icon-button class="drag-button">
-              <mat-icon>drag_indicator</mat-icon>
-              </button>
+                  <mat-icon class="drag-icon">drag_indicator</mat-icon>
+                </button>
               </div>
             </mat-list-option>
           </mat-selection-list> 
