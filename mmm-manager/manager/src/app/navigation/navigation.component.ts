@@ -13,11 +13,6 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent {
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
-  .pipe(
-    map(result => result.matches),
-    shareReplay()
-  );
 
     config: Config;
     modules : Module[] = [];

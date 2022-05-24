@@ -1,21 +1,24 @@
-<div class="grid-container" *ngIf="isPositionCalculated">
-  <mat-grid-list cols="3">
+
+<div class="grid-container" >
+  <mat-grid-list *ngIf="isPositionCalculated" cols="3" rowHeight="120px">
     <mat-grid-tile *ngFor="let position of positions" [colspan]="position.colspan">
       <mat-card class="position.name">
         <mat-card-header>
           <mat-card-title>
             {{position.name}}
-            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
-              <button mat-menu-item>Expand</button>
-              <button mat-menu-item>Remove</button>
-            </mat-menu>
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <div>content</div>
+          <mat-selection-list [multiple]="false">
+            <mat-list-option *ngFor="let module of (modules | moduleFilter: position.name)">
+              <div>{{module.module}}</div>
+              <div>
+                <button mat-icon-button class="drag-button">
+              <mat-icon>drag_indicator</mat-icon>
+              </button>
+              </div>
+            </mat-list-option>
+          </mat-selection-list> 
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

@@ -16,19 +16,20 @@ export class DashboardComponent implements OnChanges {
 
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes['modules']) {
-      console.log('modules changed');
       this.calculatePositions();
     }
   }
   calculatePositions(){
     this.modules.forEach(module => {
-      
       const pos = Position.positions.filter(p => p.name === module.position);
       module['pos'] = pos[0];
-      console.log(module);
     });
-    this.isPositionCalculated = true;
+    if(this.modules.length > 0) {
+      this.isPositionCalculated = true;
+    }
+  }
+  filteredModules(className:string) : Module[]{
+    return this.modules.filter(m => m.position === className);
   }
 }
