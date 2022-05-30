@@ -4,13 +4,15 @@
   <div  style="height: 1200px">
  <div cdkDropListGroup>
       <div cdkDropList
-                    *ngFor="let position of positions" 
+                    *ngFor="let position of positions, let i = index" 
                     style="margin: 2;"
                     (cdkDropListDropped)="drop($event)"
                     class="example-list"
                     id="{{position.name}}"> 
         <mat-accordion>
-          <mat-expansion-panel class="position.name">
+          <mat-expansion-panel class="position.name" 
+                                (mouseenter)="expansionOpenClose($event, i, true)"
+                                (mouseleave)="expansionOpenClose($event, i, false)">
             <mat-expansion-panel-header [ngStyle]="{'background-color': position.background}">
               <mat-panel-title>
                 {{position.name}}
@@ -18,8 +20,7 @@
             </mat-expansion-panel-header>          
                 <div *ngFor="let module of position.modules" cdkDrag
                       [cdkDragData]="module"
-                      class="example-box"
-                      [ngStyle]="{'background-color': position.background}">
+                      class="example-box">
                   {{module.module}}
                 </div>
           </mat-expansion-panel>

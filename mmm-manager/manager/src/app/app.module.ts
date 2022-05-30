@@ -17,7 +17,9 @@ import { MatListModule } from '@angular/material/list';
 import { HttpClientModule } from '@angular/common/http';
 import { ModulePipe } from './pipes/module.pipe';
 import {MatExpansionModule} from '@angular/material/expansion';
-import { DragDropModule } from '@angular/cdk/drag-drop'
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MouseEnterLeaveDebounceDirective } from './directives/mouse.enter.leave.debounce.directive';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -26,7 +28,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     AppComponent,
     DashboardComponent,
     NavigationComponent,
-    ModulePipe
+    ModulePipe,
+    MouseEnterLeaveDebounceDirective
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,12 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
     MatListModule,
     HttpClientModule,
     MatExpansionModule,
-    DragDropModule
+    DragDropModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
+    ReactiveFormsModule
 
   ],
   providers: [],

@@ -14,6 +14,7 @@ export class DashboardComponent implements OnChanges {
   modules: Module[] = [];
   isPositionCalculated = false;
   positions: Position[] = Position.positions;
+  panelOpenState = false;
 
   constructor() {}
   ngOnChanges(changes: SimpleChanges): void {
@@ -41,7 +42,6 @@ export class DashboardComponent implements OnChanges {
   }
   drop(event:  CdkDragDrop<string[]>){
     let module = event.item.data as Module;
-    console.log(module);
     const prevPosId = event.previousContainer.id;
     const newPosId = event.container.id;
     if (prevPosId !== newPosId) {
@@ -51,5 +51,8 @@ export class DashboardComponent implements OnChanges {
       newPos?.modules?.push(module);
       prevPos?.modules?.splice(prevPos.modules.indexOf(module),1);
     }
+  }
+  expansionOpenClose(event: any, i:number, open: boolean){
+    console.log(event,i, open);
   }
 }
