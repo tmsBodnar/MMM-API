@@ -16,6 +16,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { HttpClientModule } from '@angular/common/http';
 import { ModulePipe } from './pipes/module.pipe';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { DragDropModule } from '@angular/cdk/drag-drop'
+
 
 
 @NgModule({
@@ -37,7 +40,9 @@ import { ModulePipe } from './pipes/module.pipe';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
-    HttpClientModule
+    HttpClientModule,
+    MatExpansionModule,
+    DragDropModule
 
   ],
   providers: [],

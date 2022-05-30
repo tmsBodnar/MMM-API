@@ -1,11 +1,10 @@
 .grid-container {
   margin: 20px;
- 
 }
 .drag-button {
   position: absolute;
   top: 5px;
-  right: 10px;
+  right: -10px;
 }
 
 .top_bar{
@@ -16,18 +15,20 @@
 .top_left {
   top: 100%;
   text-align: left;
-  width:80%;
+  width:30%;
 }
 .top_center {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
+  width: 30%;
 }
 .top_right {
   top: 100%;
   right: 0;
   text-align: right;
   height: auto;
+  width: 30%;
 }
 .upper_third {
   top: 33%;
@@ -55,23 +56,74 @@
 .bottom_left {
   bottom: 100%;
   text-align: left;
+  width: 30%;
 }
 .bottom_center {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
+  width: 30%;
 }
 .bottom_right {
   bottom: 100%;
   right: 0;
   text-align: right;
+  width: 30%;
 }
 :host::ng-deep .mat-grid-tile-content{
   display: block !important;
 }
-:host::ng-deep .mat-card{
+:host::ng-deep .mat-grid-tile{
   height: fit-content;
+  margin-left: 10px;
 }
-.drag-icon{
-  transform: scale(0.8);
+:host::ng-deep.mat-list-item-content{
+  padding: 0 !important;
+}
+/*dragrop*/
+.example-list {
+  border: solid 1px #ccc;
+  min-height: 40px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.example-box {
+  padding: 10px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
