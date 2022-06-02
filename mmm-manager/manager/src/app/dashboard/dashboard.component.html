@@ -1,31 +1,21 @@
 <div class="grid-container" *ngIf="isPositionCalculated">
-  <div style="width:70%; margin: auto;"></div>
-  <img src="assets/regions.png" alt="regions" style='height: 100%; width: 70%; object-fit: contain; margin: auto; display: block;'>
-  <div  style="height: 1200px">
  <div cdkDropListGroup>
       <div cdkDropList
-                    *ngFor="let position of positions, let i = index" 
-                    style="margin: 2;"
-                    (cdkDropListDropped)="drop($event)"
-                    class="example-list"
-                    id="{{position.name}}"> 
-        <mat-accordion>
-          <mat-expansion-panel class="position.name" 
-                                (mouseenter)="expansionOpenClose($event, i, true)"
-                                (mouseleave)="expansionOpenClose($event, i, false)">
-            <mat-expansion-panel-header [ngStyle]="{'background-color': position.background}">
-              <mat-panel-title>
-                {{position.name}}
-              </mat-panel-title>
-            </mat-expansion-panel-header>          
-                <div *ngFor="let module of position.modules" cdkDrag
-                      [cdkDragData]="module"
-                      class="example-box">
-                  {{module.module}}
-                </div>
-          </mat-expansion-panel>
-        </mat-accordion>
+          *ngFor="let position of positions, let i = index" 
+          (cdkDropListDropped)="drop($event)"
+          class="{{position.name}}"
+          [ngStyle]="{'background': position.background}"
+          id="{{position.name}}">
+          <div style="text-align: center;">{{position.name}}</div>        
+          <div *ngFor="let module of position.modules"
+               cdkDrag
+               [cdkDragData]="module"
+               >
+               <div style="font-size: small;margin-left: 5px;float: center;">
+                <span style="cursor: pointer;">{{module.module}}</span>
+              </div>
+              
+          </div>
     </div>
-  </div>
   </div>
 </div>
