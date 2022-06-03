@@ -1,11 +1,15 @@
 <h1 mat-dialog-title>{{module.module}}</h1>
 
 <div mat-dialog-content>
-    <mat-form-field appearance="fill">
-        <mat-label>{{module.position}}</mat-label>
-        <input matInput >
-      </mat-form-field>
-
+  <mat-form-field appearance="fill">
+    <mat-label>Header</mat-label>
+    <input matInput [ngModel]="module.header">
+  </mat-form-field>
+  <div>
+    <ng-template *ngFor="let field of module.config | keyvalue">
+      {{field}}
+    </ng-template>
+  </div>
 </div>
 
 
