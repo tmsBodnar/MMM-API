@@ -20,6 +20,10 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MouseEnterLeaveDebounceDirective } from './directives/mouse.enter.leave.debounce.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { EditDialogComponent } from './dashboard/dialog/edit-dialog/edit-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 
@@ -29,7 +33,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     DashboardComponent,
     NavigationComponent,
     ModulePipe,
-    MouseEnterLeaveDebounceDirective
+    MouseEnterLeaveDebounceDirective,
+    EditDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -50,8 +55,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
-
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>{{module.module}}</h1>
+
+<div mat-dialog-content>
+    <mat-form-field appearance="fill">
+        <mat-label>{{module.position}}</mat-label>
+        <input matInput >
+      </mat-form-field>
+
+</div>
+
+
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Save</button>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+</div>

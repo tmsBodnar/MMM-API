@@ -3,6 +3,9 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Module } from '../models/Module';
 import { Position } from '../models/Position';
 
+import {MatDialog} from '@angular/material/dialog';
+import { EditDialogComponent } from './dialog/edit-dialog/edit-dialog.component';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -16,7 +19,8 @@ export class DashboardComponent implements OnChanges {
   positions: Position[] = Position.positions;
   panelOpenState = false;
 
-  constructor() {}
+  constructor(public dialogRef: MatDialog) {}
+  
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['modules']) {
       this.calculatePositions();
@@ -45,17 +49,22 @@ export class DashboardComponent implements OnChanges {
     const prevPosId = event.previousContainer.id;
     const newPosId = event.container.id;
     if (prevPosId !== newPosId) {
-      let prevPos = this.positions.find(p => p.name === prevPosId);
-      let newPos = this.positions.find(p => p.name === newPosId);
-      module.pos === newPos;
-      newPos?.modules?.push(module);
-      prevPos?.modules?.splice(prevPos.modules.indexOf(module),1);
+      let prevPos = this.positions.filter(p => p.name === prevPosId);
+      let newPos = this.positions.filter(p => p.name === newPosId);
+      module.pos = newPos[0];
+      module.position = newPos[0].name;
+      newPos[0].modules?.push(module);
+      prevPos[0].modules?.splice(prevPos[0].modules.indexOf(module),1);
     }
-  }
-  expansionOpenClose(event: any, i:number, open: boolean){
-    console.log(event,i, open);
-  }
-  onModuleDblClicked(module: Module){
     
+  }
+  onModuleClicked(module: Module){
+    const dialogRef = this.dialogRef.open(EditDialogComponent, {
+      data: module
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }
