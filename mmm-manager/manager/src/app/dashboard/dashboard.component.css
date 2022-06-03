@@ -2,6 +2,8 @@
   padding: 10px;
   background: black;
   min-height: 40em;
+  width: 20em;
+  margin: auto;
 }
 .top_bar{
   top: 0;

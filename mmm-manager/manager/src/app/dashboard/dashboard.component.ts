@@ -55,4 +55,7 @@ export class DashboardComponent implements OnChanges {
   expansionOpenClose(event: any, i:number, open: boolean){
     console.log(event,i, open);
   }
+  onModuleDblClicked(module: Module){
+    
+  }
 }
