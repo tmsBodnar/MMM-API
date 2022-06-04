@@ -1,14 +1,24 @@
 <h1 mat-dialog-title>{{module.module}}</h1>
 
 <div mat-dialog-content>
-  <mat-form-field appearance="fill">
-    <mat-label>Header</mat-label>
-    <input matInput [ngModel]="module.header">
-  </mat-form-field>
-  <div>
-    <ng-template *ngFor="let field of module.config | keyvalue">
-      {{field}}
-    </ng-template>
+  <div [formGroup]="configForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Header</mat-label>
+      <input matInput formControlName="header">
+    </mat-form-field>
+    <div>
+      <ng-container formArrayName="configItemForms">
+        <ng-container *ngFor="let configItemForm of configItemForms.controls; let i = index">
+    <!--      <div [formGroupName]="configItemForm">-->
+            <mat-form-field appearance="fill">
+              <input matInput
+                    [formControl]="configItemForms.controls[i]"
+                    placeholder="placeholder">
+          </mat-form-field>
+    <!--     </div> -->
+        </ng-container>
+      </ng-container>
+    </div>
   </div>
 </div>
 
