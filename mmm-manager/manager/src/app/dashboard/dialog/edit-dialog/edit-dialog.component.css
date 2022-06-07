@@ -1,0 +1,6 @@
+.inOne{
+    background: #eeeeee;
+}
+:host::ng-deep.mat-dialog-content{
+    margin: auto !important;
+}

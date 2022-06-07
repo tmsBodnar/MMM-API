@@ -16,7 +16,8 @@ export class EditDialogComponent implements OnInit {
   configItems: ModuleConfig = {};
   configForm : FormGroup;
   keys: string[] = [];
-
+  tags: string[] = [];
+ 
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Module,
@@ -25,13 +26,12 @@ export class EditDialogComponent implements OnInit {
     if (this.module.config !== undefined) {
       this.processNestedConfig(this.module.config, false);
     }
-    console.log(this.configItems);
-    this.keys = Object.keys(this.configItems);
     this.configForm = this.fb.group({
       header: new FormControl([this.module.header]),
       configItemForms: this.fb.array([])
     });
-    this.createConfigItemForms(this.configItems);
+    this.createConfigItemForms(this.configItems, -1);
+    console.log(this.tags, this.keys);
    }
 
   ngOnInit(): void {
@@ -41,20 +41,23 @@ export class EditDialogComponent implements OnInit {
     return this.configForm.controls["configItemForms"] as FormArray;
   }
 
-  createConfigItemForms(configItems: ModuleConfig) {
-    Object.keys(configItems).forEach((itemKey =>{
+  createConfigItemForms(configItems: ModuleConfig, index: number) {
+    Object.keys(configItems).forEach(((itemKey, itemIndex) =>{
       if(Array.isArray(configItems[itemKey as keyof ModuleConfig])){
         const array = configItems[itemKey as keyof ModuleConfig] as Array<any>;
-          array.forEach(element =>{
-            this.createConfigItemForms(element);
+          array.forEach((element, elementIndex) =>{
+            this.createConfigItemForms(element, elementIndex);
           });
       }else{
+        this.keys.push(itemKey);
+        if (index > -1) {
+          this.tags.push(index + '');
+        }
        const configItemForm = new FormControl([configItems[itemKey as keyof ModuleConfig]]);
        this.configItemForms.push(configItemForm);
       }
     }));
     console.log(this.configItemForms);
-   // this.configForm.setControl(itemKey, configItemForm);
   }
 
   processNestedConfig(conf: ModuleConfig, isNested: boolean){
