@@ -30,7 +30,7 @@ export class EditDialogComponent implements OnInit {
       header: new FormControl([this.module.header]),
       configItemForms: this.fb.array([])
     });
-    this.createConfigItemForms(this.configItems, -1);
+    this.createConfigItemForms(this.configItems, -1, '');
     console.log(this.tags, this.keys);
    }
 
@@ -41,17 +41,23 @@ export class EditDialogComponent implements OnInit {
     return this.configForm.controls["configItemForms"] as FormArray;
   }
 
-  createConfigItemForms(configItems: ModuleConfig, index: number) {
+  createConfigItemForms(configItems: ModuleConfig, index: number, name: string) {
     Object.keys(configItems).forEach(((itemKey, itemIndex) =>{
       if(Array.isArray(configItems[itemKey as keyof ModuleConfig])){
         const array = configItems[itemKey as keyof ModuleConfig] as Array<any>;
           array.forEach((element, elementIndex) =>{
-            this.createConfigItemForms(element, elementIndex);
+            this.createConfigItemForms(element, elementIndex, itemKey);
           });
+        } else if (typeof configItems[itemKey as keyof ModuleConfig] === 'object') {
+          this.createConfigItemForms( configItems[itemKey as keyof ModuleConfig] as ModuleConfig, index, itemKey);
       }else{
-        this.keys.push(itemKey);
+        
         if (index > -1) {
           this.tags.push(index + '');
+          this.keys.push(name +' #' + (index + 1) + '-' + itemKey);
+        }
+        else {
+          this.keys.push(itemKey);
         }
        const configItemForm = new FormControl([configItems[itemKey as keyof ModuleConfig]]);
        this.configItemForms.push(configItemForm);
