@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject} from '@angular/core';
 import { Form, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { ModuleConfig } from 'src/app/models/ModuleConfig';
 import { Module } from '../../../models/Module';
 
@@ -21,7 +21,8 @@ export class EditDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Module,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<EditDialogComponent>) {
     this.module = data;
     if (this.module.config !== undefined) {
       this.processNestedConfig(this.module.config, false);
@@ -31,11 +32,16 @@ export class EditDialogComponent implements OnInit {
       configItemForms: this.fb.array([])
     });
     this.createConfigItemForms(this.configItems, -1, '');
-    console.log(this.tags, this.keys);
    }
 
   ngOnInit(): void {
   }
+
+  onSaveClicked(){
+    this.setModuleConfigToModule();
+    this.dialogRef.close(this.module);
+  }
+
 
   get configItemForms() {
     return this.configForm.controls["configItemForms"] as FormArray;
@@ -63,7 +69,6 @@ export class EditDialogComponent implements OnInit {
        this.configItemForms.push(configItemForm);
       }
     }));
-    console.log(this.configItemForms);
   }
 
   processNestedConfig(conf: ModuleConfig, isNested: boolean){
@@ -83,5 +88,13 @@ export class EditDialogComponent implements OnInit {
             this.configItems[key]=conf[key as keyof ModuleConfig];
         }
       });
+  }
+  setModuleConfigToModule(){
+    this.module.header = this.configForm.get('header')?.value;
+    
+    Object.keys(this.module.config).forEach((key) => {
+      
+      this.configItemForms.get(key)?.value;
+    });
   }
 }

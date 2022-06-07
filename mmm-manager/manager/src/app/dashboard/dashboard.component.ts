@@ -64,7 +64,8 @@ export class DashboardComponent implements OnChanges {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      const res = result as Module;
+      console.log('Dialog result: ',res);
     });
   }
 }
