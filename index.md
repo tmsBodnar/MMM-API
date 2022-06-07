@@ -1,6 +1,12 @@
-## Welcome to GitHub Pages
+Easy Drag-And-Drop Module Management for the awesome MagicMirror 
 
-You can use the [editor on GitHub](https://github.com/tmsBodnar/MMM-API/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+- [X] Get config.js
+- [X] Create Dashboard based on Positions
+- [X] Showed modules in Positions
+- [X] Created Draggable-Droppable modules in Dashboard
+- [X] Opens Dialog on ;odule double clicked
+- [X] Generate Form dynamically,based on Module congfig properties
+- [] Save changed Module
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
