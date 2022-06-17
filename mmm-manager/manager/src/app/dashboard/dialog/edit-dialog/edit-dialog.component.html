@@ -9,15 +9,29 @@
     <div>
       <ng-container formArrayName="configItemForms">
         <ng-container *ngFor="let configItemForm of configItemForms.controls; let i = index">
-            <mat-form-field appearance="fill"
-              [ngClass]=" i > 0 &&  i < tags.length && tags[i] === tags[i - 1] || tags[i] === tags[i + 1] ? 'inOne': ''"
-              [ngStyle]="(i > 0 &&  i < tags.length && tags[i] === tags[i - 1]) ? {'margin-bottom':  '0.3em'} : {'margin-bottom':  '0.em'}">
-              <mat-label>{{keys[i]}}</mat-label>
-              <input matInput
-                    [formControl]="configItemForms.controls[i]"
+          <ng-container *ngIf="(configItemForm.controls && configItemForm.controls.length > 0)">
+            <div id="arrayTitle">{{keys[i]}}
+            <ng-container *ngFor="let subconfigItemForm of configItemForm.controls; let j = index">
+              <mat-form-field appearance="fill"
+                  [ngClass]=" j > 0 &&  i < tags.length && tags[j] === tags[j - 1] || tags[j] === tags[j + 1] ? 'inOne': ''"
+                  [ngStyle]="(j > 0 &&  i < tags.length && tags[j] === tags[j - 1]) ? {'margin-bottom':  '0.5em'} : {'margin-bottom':  '0.em'}">
+                <mat-label>{{subKeys[j]}}</mat-label>
+                <input matInput
+                    [formControl]="configItemForm.controls[j]"
                     placeholder="placeholder">
+              </mat-form-field>
+          </ng-container>
+        </div>
+        </ng-container> 
+        <ng-container *ngIf="!configItemForm.controls">
+          <mat-form-field appearance="fill">
+            <mat-label>{{keys[i]}}</mat-label>
+            <input matInput
+                  [formControl]="configItemForms.controls[i]"
+                  placeholder="placeholder">
           </mat-form-field>
         </ng-container>
+      </ng-container>
       </ng-container>
     </div>
   </div>

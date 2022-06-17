@@ -18,7 +18,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ModulePipe } from './pipes/module.pipe';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MouseEnterLeaveDebounceDirective } from './directives/mouse.enter.leave.debounce.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditDialogComponent } from './dashboard/dialog/edit-dialog/edit-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -33,7 +32,6 @@ import { MatInputModule } from '@angular/material/input';
     DashboardComponent,
     NavigationComponent,
     ModulePipe,
-    MouseEnterLeaveDebounceDirective,
     EditDialogComponent
   ],
   imports: [

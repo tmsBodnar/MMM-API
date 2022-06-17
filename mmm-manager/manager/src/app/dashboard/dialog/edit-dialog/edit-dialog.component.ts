@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject} from '@angular/core';
-import { Form, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ModuleConfig } from 'src/app/models/ModuleConfig';
 import { Module } from '../../../models/Module';
 
@@ -16,7 +16,8 @@ export class EditDialogComponent implements OnInit {
   configItems: ModuleConfig = {};
   configForm : FormGroup;
   keys: string[] = [];
-  tags: string[] = [];
+  subKeys : string[] = [];
+  tags: number[] = [];
  
 
   constructor(
@@ -31,7 +32,12 @@ export class EditDialogComponent implements OnInit {
       header: new FormControl([this.module.header]),
       configItemForms: this.fb.array([])
     });
-    this.createConfigItemForms(this.configItems, -1, '');
+    
+    this.createConfigItemForms(this.configItems,false);
+    console.log(this.configItemForms);
+    console.log(this.subKeys);
+    console.log(this.keys);
+    console.log(this.tags);
    }
 
   ngOnInit(): void {
@@ -46,29 +52,40 @@ export class EditDialogComponent implements OnInit {
   get configItemForms() {
     return this.configForm.controls["configItemForms"] as FormArray;
   }
+  get subArray(){
+    return this.configForm.controls["subArray"] as FormArray;
+  }
 
-  createConfigItemForms(configItems: ModuleConfig, index: number, name: string) {
+  createConfigItemForms(configItems: ModuleConfig, isNested: boolean, parent?: string) {
     Object.keys(configItems).forEach(((itemKey, itemIndex) =>{
       if(Array.isArray(configItems[itemKey as keyof ModuleConfig])){
-        const array = configItems[itemKey as keyof ModuleConfig] as Array<any>;
-          array.forEach((element, elementIndex) =>{
-            this.createConfigItemForms(element, elementIndex, itemKey);
+        const array = configItems[itemKey as keyof ModuleConfig] as Array<ModuleConfig>;
+        this.keys.push(itemKey);
+        let subArray = this.fb.array([]);
+          array.forEach((element, indx) =>{
+            Object.keys(element).forEach((subKey) =>{
+              subArray.push(this.createItemInForm(element, subKey));
+              this.subKeys.push(subKey);
+              this.tags.push(indx);
+            });
           });
-        } else if (typeof configItems[itemKey as keyof ModuleConfig] === 'object') {
-          this.createConfigItemForms( configItems[itemKey as keyof ModuleConfig] as ModuleConfig, index, itemKey);
+        this.configItemForms.push(subArray);
+      } else if (typeof configItems[itemKey as keyof ModuleConfig] === 'object') {
+        this.createConfigItemForms(configItems[itemKey as keyof ModuleConfig] as ModuleConfig, true, itemKey);
       }else{
-        
-        if (index > -1) {
-          this.tags.push(index + '');
-          this.keys.push(name +' #' + (index + 1) + '-' + itemKey);
-        }
-        else {
+        if (isNested) {
+          this.keys.push("#" + parent + ": " + itemKey);
+        } else {
           this.keys.push(itemKey);
         }
-       const configItemForm = new FormControl([configItems[itemKey as keyof ModuleConfig]]);
-       this.configItemForms.push(configItemForm);
+        this.configItemForms.push(this.createItemInForm(configItems, itemKey));
       }
     }));
+  }
+
+  createItemInForm(configItems: ModuleConfig, itemKey: string): AbstractControl{
+    return new FormControl([configItems[itemKey as keyof ModuleConfig]]);
+
   }
 
   processNestedConfig(conf: ModuleConfig, isNested: boolean){
@@ -90,11 +107,32 @@ export class EditDialogComponent implements OnInit {
       });
   }
   setModuleConfigToModule(){
-    this.module.header = this.configForm.get('header')?.value;
-    
-    Object.keys(this.module.config).forEach((key) => {
-      
-      this.configItemForms.get(key)?.value;
+    this.module.header = this.configForm.controls['header'].value[0];
+    this.configItemForms.controls.forEach((control, indx) => {
+      Object.keys(this.module.config).forEach(element => {
+        if (Array.isArray(this.module.config['element'])){
+          const arr = this.module.config['element'] as Array<any>;
+          arr.forEach(item => {
+            console.log(item, this.keys[indx]);
+            if (item === this.keys[indx]){
+              item.value = control.value[0];
+            }
+          });
+        // }
+        // if (typeof (this.module.config['element'] === 'object')){
+        //   Object.keys(this.module.config['element']).forEach(item =>{
+        //     console.log(item, this.keys[indx]);
+        //     if(item === this.keys[indx]){
+        //       this.module.config[item] = control.value[0];
+        //     }
+        //   });
+        } else{
+          console.log(element, this.keys[indx]);
+          if(element === this.keys[indx]){
+            this.module.config[element] = control.value[0];
+          }
+        }
+      });
     });
   }
 }

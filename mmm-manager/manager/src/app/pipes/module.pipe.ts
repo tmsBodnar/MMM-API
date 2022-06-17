@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Module } from '../models/Module';
 
 @Pipe({
   name: 'moduleFilter'
