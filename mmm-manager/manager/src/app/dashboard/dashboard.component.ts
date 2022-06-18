@@ -19,7 +19,7 @@ export class DashboardComponent implements OnChanges {
   isPositionCalculated = false;
   positions: Position[] = Position.positions;
   panelOpenState = false;
-  configItems: ModuleConfig = {};
+  private configItems: ModuleConfig = {};
 
   constructor(public dialogRef: MatDialog) {}
   
@@ -28,7 +28,38 @@ export class DashboardComponent implements OnChanges {
       this.calculatePositions();
     }
   }
-  calculatePositions(){
+  
+  drop(event:  CdkDragDrop<string[]>){
+    let module = event.item.data as Module;
+    const prevPosId = event.previousContainer.id;
+    const newPosId = event.container.id;
+    if (prevPosId !== newPosId) {
+      let prevPos = this.positions.filter(p => p.name === prevPosId);
+      let newPos = this.positions.filter(p => p.name === newPosId);
+      module.pos = newPos[0];
+      module.position = newPos[0].name;
+      newPos[0].modules?.push(module);
+      prevPos[0].modules?.splice(prevPos[0].modules.indexOf(module),1);
+    }
+    
+  }
+  onModuleClicked(module: Module){
+    this.configItems = {};
+    this.configItems['header'] = module.header !== undefined ? module.header : '';
+    if (module.config !== undefined){
+      this.processNestedConfig(module.config, false);
+    }
+    const dialogRef = this.dialogRef.open(EditDialogComponent, {
+      data: { config: this.configItems,
+            title: module.module }
+    })
+    dialogRef.afterClosed().subscribe(result => {
+      const res = result as ModuleConfig;
+      this.setModuleConfigFromResult(res);
+    });
+  }
+
+  private calculatePositions(){
     this.modules.forEach(module => {
       const pos = Position.positions.filter(p => p.name === module.position);
       if(pos.length > 0){
@@ -46,36 +77,12 @@ export class DashboardComponent implements OnChanges {
       this.isPositionCalculated = true;
     }
   }
-  drop(event:  CdkDragDrop<string[]>){
-    let module = event.item.data as Module;
-    const prevPosId = event.previousContainer.id;
-    const newPosId = event.container.id;
-    if (prevPosId !== newPosId) {
-      let prevPos = this.positions.filter(p => p.name === prevPosId);
-      let newPos = this.positions.filter(p => p.name === newPosId);
-      module.pos = newPos[0];
-      module.position = newPos[0].name;
-      newPos[0].modules?.push(module);
-      prevPos[0].modules?.splice(prevPos[0].modules.indexOf(module),1);
-    }
-    
-  }
-  onModuleClicked(module: Module){
-    this.configItems['header'] = module.header !== undefined ? module.header : '';
-    if (module.config !== undefined){
-      this.processNestedConfig(module.config, false);
-    }
-    const dialogRef = this.dialogRef.open(EditDialogComponent, {
-      data: { config: this.configItems,
-            title: module.module }
-    })
-    dialogRef.afterClosed().subscribe(result => {
-      const res = result as ModuleConfig;
- //     console.log('Dialog result: ',res);
-    });
+
+  private setModuleConfigFromResult(res: ModuleConfig) {
+    console.log(res);
   }
 
-  processNestedConfig(conf: ModuleConfig, isNested: boolean){
+  private processNestedConfig(conf: ModuleConfig, isNested: boolean){
     Object.keys(conf).forEach((key) => {
       if(Array.isArray(conf[key as keyof ModuleConfig])){
         const array = conf[key as keyof ModuleConfig] as Array<any>;

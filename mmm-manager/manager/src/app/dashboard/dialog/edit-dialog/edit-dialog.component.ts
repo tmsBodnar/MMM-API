@@ -29,13 +29,7 @@ export class EditDialogComponent implements OnInit {
       header: new FormControl([this.configItems['header']]),
       configItemForms: this.fb.array([])
     });
-    
     this.createConfigItemForms(this.configItems,false);
-    console.log(this.configItemForms);
-    console.log(this.configItems);
-    console.log(this.subKeys);
-    console.log(this.keys);
-    console.log(this.tags);
    }
 
   ngOnInit(): void {
@@ -43,26 +37,25 @@ export class EditDialogComponent implements OnInit {
 
   onSaveClicked(){
     this.configItems['header'] = this.configForm.controls['header'].value[0];
-  //  this.setModuleConfigToModule();
-    this.setModuleConfigFromForm(this.configItems, this.configItemForms);
-    console.log(this.configItems);
+    this.setModuleConfigFromForm(this.configItems, this.configItemForms, false);
     this.dialogRef.close(this.configItems);
   }
-
 
   get configItemForms() {
     return this.configForm.controls["configItemForms"] as FormArray;
   }
+
   get subArray(){
     return this.configForm.controls["subArray"] as FormArray;
   }
 
-  createConfigItemForms(configItems: ModuleConfig, isNested: boolean, parent?: string) {
-    Object.keys(configItems).forEach(((itemKey, itemIndex) =>{
+  createConfigItemForms(configItems: ModuleConfig, isNested: boolean) {
+    Object.keys(configItems).forEach((itemKey =>{
       if(Array.isArray(configItems[itemKey as keyof ModuleConfig])){
         const array = configItems[itemKey as keyof ModuleConfig] as Array<ModuleConfig>;
         this.keys.push(itemKey);
         let subArray = this.fb.array([]);
+        console.log(subArray);
           array.forEach((element, indx) =>{
             Object.keys(element).forEach((subKey) =>{
               subArray.push(this.createItemInForm(element, subKey));
@@ -72,13 +65,14 @@ export class EditDialogComponent implements OnInit {
           });
         this.configItemForms.push(subArray);
       } else if (typeof configItems[itemKey as keyof ModuleConfig] === 'object') {
-        this.createConfigItemForms(configItems[itemKey as keyof ModuleConfig] as ModuleConfig, true, itemKey);
+        Object.keys(configItems[itemKey as keyof ModuleConfig]).forEach(subObjectKey =>{
+          const formInGroup =  this.createItemInForm(configItems[itemKey as keyof ModuleConfig] as ModuleConfig, subObjectKey);
+          console.log(formInGroup);
+          this.keys.push("#" + itemKey + ": " +subObjectKey);
+          this.configItemForms.controls.push(formInGroup);
+        });
       }else{
-        if (isNested) {
-          this.keys.push("#" + parent + ": " + itemKey);
-        } else {
-          this.keys.push(itemKey);
-        }
+        this.keys.push(itemKey);
         this.configItemForms.push(this.createItemInForm(configItems, itemKey));
       }
     }));
@@ -86,27 +80,27 @@ export class EditDialogComponent implements OnInit {
 
   createItemInForm(configItems: ModuleConfig, itemKey: string): AbstractControl{
     return new FormControl([configItems[itemKey as keyof ModuleConfig]]);
-
   }
 
-  setModuleConfigFromForm(configItem: ModuleConfig, configForms: AbstractControl){
-    
+  setModuleConfigFromForm(configItem: ModuleConfig, configForms: AbstractControl, isNested: boolean){
     const arrayControls = (configForms as FormArray).controls;
-    const groupControl = (configForms as FormControl);
     if (arrayControls && arrayControls.length > 1) {
       arrayControls.forEach((control, indx) =>{
         Object.keys(configItem).forEach((item, itemIndex) =>{
-          const subArray = control as FormArray;
-          const subGroup = control as FormGroup;
-          const subForm = control as FormControl;
-          if (subForm) {
-            console.log("form", configItem[item]);
-            if(item === this.keys[indx]){
+          const isSubArray = control instanceof FormArray;
+          const isSubForm = control instanceof FormControl;
+          if (isSubForm) {
+            const subForm = control as FormControl;
+            var key = isNested ? this.subKeys[indx] :  this.keys[indx];
+            if (key.indexOf("#") > -1){
+              key = key.slice(key.indexOf(':'), key.length);
+            }
+            if(item === key){
               configItem[item] = subForm.value;
             }
           }
-          if(subArray) {
-            this.setModuleConfigFromForm(configItem[item] as ModuleConfig, control);
+          if(isSubArray) {
+            this.setModuleConfigFromForm(configItem as ModuleConfig, control, true);
           }
         });
       });
@@ -114,43 +108,9 @@ export class EditDialogComponent implements OnInit {
     else {
       Object.keys(configItem).forEach((item, itemIndex) =>{
         if(item === this.keys[itemIndex]){
-          configItem[item] = groupControl.value[0];
+          configItem[item] = arrayControls[0].value[0];
         }
       });
     }
-  }
-  
-  setModuleConfigToModule(){
-    this.configItemForms.controls.forEach((control, indx) => {
-      Object.keys(this.configItems).forEach(element => {
-        if (Array.isArray(this.configItems[element])){
-          const arr = this.configItems[element] as Array<any>;
-          arr.forEach(item => {
-            const formArray = (control as FormArray).controls;
-              if (formArray) {
-                  this.subKeys.forEach ((subKey, subIndx) => {
-                    console.log(item, subKey, formArray[subIndx]);
-                    if( item[subIndx] === subKey) {
-                      item = formArray[subIndx].value;
-                    }
-                  });
-              }  
-          });
-        // }
-        // if (typeof (this.module.config['element'] === 'object')){
-        //   Object.keys(this.module.config['element']).forEach(item =>{
-        //     console.log(item, this.keys[indx]);
-        //     if(item === this.keys[indx]){
-        //       this.module.config[item] = control.value[0];
-        //     }
-        //   });
-        } else{
-   //       console.log(element, this.keys[indx]);
-          if(element === this.keys[indx]){
-            this.configItems[element] = control.value[0];
-          }
-        }
-      });
-    });
   }
 }
