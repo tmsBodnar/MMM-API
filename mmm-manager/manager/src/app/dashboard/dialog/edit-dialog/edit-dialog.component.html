@@ -1,11 +1,7 @@
-<h1 mat-dialog-title>{{module.module}}</h1>
+<h1 mat-dialog-title>{{title}}</h1>
 
 <div mat-dialog-content>
   <div [formGroup]="configForm">
-    <mat-form-field appearance="fill">
-      <mat-label>Header</mat-label>
-      <input matInput formControlName="header">
-    </mat-form-field>
     <div>
       <ng-container formArrayName="configItemForms">
         <ng-container *ngFor="let configItemForm of configItemForms.controls; let i = index">
@@ -18,7 +14,7 @@
                 <mat-label>{{subKeys[j]}}</mat-label>
                 <input matInput
                     [formControl]="configItemForm.controls[j]"
-                    placeholder="placeholder">
+                    placeholder="please enter {{subKeys[j]}}">
               </mat-form-field>
           </ng-container>
         </div>
@@ -28,7 +24,7 @@
             <mat-label>{{keys[i]}}</mat-label>
             <input matInput
                   [formControl]="configItemForms.controls[i]"
-                  placeholder="placeholder">
+                  placeholder="please enter {{keys[i]}}">
           </mat-form-field>
         </ng-container>
       </ng-container>

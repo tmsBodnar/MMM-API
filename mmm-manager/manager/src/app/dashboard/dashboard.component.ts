@@ -5,6 +5,7 @@ import { Position } from '../models/Position';
 
 import {MatDialog} from '@angular/material/dialog';
 import { EditDialogComponent } from './dialog/edit-dialog/edit-dialog.component';
+import { ModuleConfig } from '../models/ModuleConfig';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +19,7 @@ export class DashboardComponent implements OnChanges {
   isPositionCalculated = false;
   positions: Position[] = Position.positions;
   panelOpenState = false;
+  configItems: ModuleConfig = {};
 
   constructor(public dialogRef: MatDialog) {}
   
@@ -59,13 +61,36 @@ export class DashboardComponent implements OnChanges {
     
   }
   onModuleClicked(module: Module){
+    this.configItems['header'] = module.header !== undefined ? module.header : '';
+    if (module.config !== undefined){
+      this.processNestedConfig(module.config, false);
+    }
     const dialogRef = this.dialogRef.open(EditDialogComponent, {
-      data: module
-    });
-
+      data: { config: this.configItems,
+            title: module.module }
+    })
     dialogRef.afterClosed().subscribe(result => {
-      const res = result as Module;
-      console.log('Dialog result: ',res);
+      const res = result as ModuleConfig;
+ //     console.log('Dialog result: ',res);
     });
   }
+
+  processNestedConfig(conf: ModuleConfig, isNested: boolean){
+    Object.keys(conf).forEach((key) => {
+      if(Array.isArray(conf[key as keyof ModuleConfig])){
+        const array = conf[key as keyof ModuleConfig] as Array<any>;
+        array.forEach(element =>{
+          this.processNestedConfig(element, true);
+          this.configItems[key]=conf[key as keyof ModuleConfig];
+        });
+      } else if (typeof conf[key as keyof ModuleConfig] === 'object') {
+          this.processNestedConfig(conf[key as keyof ModuleConfig] as ModuleConfig, true);
+          this.configItems[key]=conf[key as keyof ModuleConfig];
+      }
+      if(!isNested)
+      {
+          this.configItems[key]=conf[key as keyof ModuleConfig];
+      }
+    });
+}
 }

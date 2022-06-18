@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, NgControlStatus } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ModuleConfig } from 'src/app/models/ModuleConfig';
 import { Module } from '../../../models/Module';
@@ -11,30 +11,28 @@ import { Module } from '../../../models/Module';
 })
 export class EditDialogComponent implements OnInit {
 
-  module: Module;
-  config: ModuleConfig;
   configItems: ModuleConfig = {};
   configForm : FormGroup;
   keys: string[] = [];
   subKeys : string[] = [];
   tags: number[] = [];
+  title: string;
  
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Module,
+    @Inject(MAT_DIALOG_DATA) public data: {config: ModuleConfig, title: string},
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<EditDialogComponent>) {
-    this.module = data;
-    if (this.module.config !== undefined) {
-      this.processNestedConfig(this.module.config, false);
-    }
+    this.configItems = data.config;
+    this.title = data.title;
     this.configForm = this.fb.group({
-      header: new FormControl([this.module.header]),
+      header: new FormControl([this.configItems['header']]),
       configItemForms: this.fb.array([])
     });
     
     this.createConfigItemForms(this.configItems,false);
     console.log(this.configItemForms);
+    console.log(this.configItems);
     console.log(this.subKeys);
     console.log(this.keys);
     console.log(this.tags);
@@ -44,8 +42,11 @@ export class EditDialogComponent implements OnInit {
   }
 
   onSaveClicked(){
-    this.setModuleConfigToModule();
-    this.dialogRef.close(this.module);
+    this.configItems['header'] = this.configForm.controls['header'].value[0];
+  //  this.setModuleConfigToModule();
+    this.setModuleConfigFromForm(this.configItems, this.configItemForms);
+    console.log(this.configItems);
+    this.dialogRef.close(this.configItems);
   }
 
 
@@ -88,35 +89,52 @@ export class EditDialogComponent implements OnInit {
 
   }
 
-  processNestedConfig(conf: ModuleConfig, isNested: boolean){
-      Object.keys(conf).forEach((key) => {
-        if(Array.isArray(conf[key as keyof ModuleConfig])){
-          const array = conf[key as keyof ModuleConfig] as Array<any>;
-          array.forEach(element =>{
-            this.processNestedConfig(element, true);
-            this.configItems[key]=conf[key as keyof ModuleConfig];
-          });
-        } else if (typeof conf[key as keyof ModuleConfig] === 'object') {
-            this.processNestedConfig(conf[key as keyof ModuleConfig] as ModuleConfig, true);
-            this.configItems[key]=conf[key as keyof ModuleConfig];
-        }
-        if(!isNested)
-        {
-            this.configItems[key]=conf[key as keyof ModuleConfig];
+  setModuleConfigFromForm(configItem: ModuleConfig, configForms: AbstractControl){
+    
+    const arrayControls = (configForms as FormArray).controls;
+    const groupControl = (configForms as FormControl);
+    if (arrayControls && arrayControls.length > 1) {
+      arrayControls.forEach((control, indx) =>{
+        Object.keys(configItem).forEach((item, itemIndex) =>{
+          const subArray = control as FormArray;
+          const subGroup = control as FormGroup;
+          const subForm = control as FormControl;
+          if (subForm) {
+            console.log("form", configItem[item]);
+            if(item === this.keys[indx]){
+              configItem[item] = subForm.value;
+            }
+          }
+          if(subArray) {
+            this.setModuleConfigFromForm(configItem[item] as ModuleConfig, control);
+          }
+        });
+      });
+    }
+    else {
+      Object.keys(configItem).forEach((item, itemIndex) =>{
+        if(item === this.keys[itemIndex]){
+          configItem[item] = groupControl.value[0];
         }
       });
+    }
   }
+  
   setModuleConfigToModule(){
-    this.module.header = this.configForm.controls['header'].value[0];
     this.configItemForms.controls.forEach((control, indx) => {
-      Object.keys(this.module.config).forEach(element => {
-        if (Array.isArray(this.module.config['element'])){
-          const arr = this.module.config['element'] as Array<any>;
+      Object.keys(this.configItems).forEach(element => {
+        if (Array.isArray(this.configItems[element])){
+          const arr = this.configItems[element] as Array<any>;
           arr.forEach(item => {
-            console.log(item, this.keys[indx]);
-            if (item === this.keys[indx]){
-              item.value = control.value[0];
-            }
+            const formArray = (control as FormArray).controls;
+              if (formArray) {
+                  this.subKeys.forEach ((subKey, subIndx) => {
+                    console.log(item, subKey, formArray[subIndx]);
+                    if( item[subIndx] === subKey) {
+                      item = formArray[subIndx].value;
+                    }
+                  });
+              }  
           });
         // }
         // if (typeof (this.module.config['element'] === 'object')){
@@ -127,9 +145,9 @@ export class EditDialogComponent implements OnInit {
         //     }
         //   });
         } else{
-          console.log(element, this.keys[indx]);
+   //       console.log(element, this.keys[indx]);
           if(element === this.keys[indx]){
-            this.module.config[element] = control.value[0];
+            this.configItems[element] = control.value[0];
           }
         }
       });
