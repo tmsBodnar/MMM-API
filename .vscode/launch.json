@@ -1,0 +1,31 @@
+{
+    // IntelliSense használata a lehetséges attribútumok listázásához
+    // Húzza fölé az egeret a létező attribútumok leírásának megtekintéséhez!
+    // További információért látogassa meg a következőt: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch localhost",
+            "url": "http://localhost/4200",
+            "webRoot": "${workspaceFolder}"
+        },
+
+        
+        {
+            "name": "Launch Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}"
+        },
+    ]
+}
