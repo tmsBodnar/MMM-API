@@ -27,7 +27,7 @@ export class EditDialogComponent implements OnInit {
     this.configItems = data.config;
     this.title = data.title;
     this.configForm = this.fb.group({});
-    this.createConfigItemForms(this.configItems, this.configForm);
+    this.createFormFromConfigItem(this.configItems, this.configForm);
     console.log(this.configForm);
    }
 
@@ -43,68 +43,41 @@ export class EditDialogComponent implements OnInit {
     return this.configForm.controls["subArray"] as FormArray;
   }
 
-  createConfigItemForms(configItems: ModuleConfig, parentControl: AbstractControl): AbstractControl | undefined{
-      console.log(configItems);
-      let result = undefined;
-      for (let indx = 0; indx < Object.keys(configItems).length; indx++){
-        const itemKey = Object.keys(configItems)[indx];
-        const configItem = configItems[itemKey] as ModuleConfig;
-        if (Array.isArray(configItem)){
-          let subArray = this.fb.array([]);
-          for (let subIndex = 0; subIndex < Object.keys(configItem).length; subIndex++){
-            let subItem = configItem[subIndex];
-            let subControl = this.createConfigItemForms(subItem, subArray) as AbstractControl;
-            subArray.push(subControl);
-          };
+  createFormFromConfigItem(configItem: ModuleConfig, parentControl: AbstractControl): AbstractControl | undefined {
+    console.log(configItem);
+    let result = undefined;
+    for (let indx = 0; indx < Object.keys(configItem).length; indx++){
+        const itemKey = Object.keys(configItem)[indx];
+        const item = configItem[itemKey] as ModuleConfig;
+        if (Array.isArray(item)){
+          console.log("array:", itemKey, item);
+          const array = this.fb.array([]);
+          result = this.createFormFromConfigItem(item, array);
           if (parentControl instanceof FormGroup) {
-            (parentControl as FormGroup).addControl(itemKey, subArray);
+            (parentControl as FormGroup).addControl(itemKey, array);
           }  else {
-              (parentControl as FormArray).controls.push(subArray);
+              (parentControl as FormArray).controls.push(array);
           }
-          result = subArray;
-        }else if ( typeof configItem === "object") {
-          let subGroup = this.fb.group({});
-          for (let subIndex = 0; subIndex < Object.keys(configItem).length; subIndex++){
-            let subKey = Object.keys(configItem)[subIndex];
-            let subItem = configItem[subKey];
-            const type = typeof subItem;
-            if (type !== "object"){ 
-              let subControl = this.createItemInForm(subItem as ModuleConfig, subKey) as AbstractControl;  
-              subGroup.addControl(subKey, subControl);
-            } else {
-              let subControl = this.createConfigItemForms(subItem as ModuleConfig, subGroup) as AbstractControl;
-              subGroup.addControl(subKey, subControl);
-            }
+        } else if (typeof item === "object"){
+          console.log("object:", itemKey, item);
+          const group = this.fb.group({});
+          result = this.createFormFromConfigItem(item, group);
+          if (parentControl instanceof FormGroup) {
+            (parentControl as FormGroup).addControl(itemKey, group);
+          }  else {
+              (parentControl as FormArray).controls.push(group);
           }
-            if (parentControl instanceof FormGroup) {
-              (parentControl as FormGroup).addControl(itemKey, subGroup);
-           } else if (parentControl instanceof FormArray) {
-              (parentControl as FormArray).controls.push(subGroup);
-           }
-           else {
-            console.log("nope 1");
-           }
-           result = subGroup;
         } else {
-           if (parentControl instanceof FormGroup) {
-              const parentGroup = parentControl as FormGroup;              
-              const control = this.createItemInForm(configItem, itemKey);
-              parentGroup.addControl(itemKey, control);
-              result = control;
-            } 
-            else if (parentControl instanceof FormArray){
-              const control = this.createItemInForm(configItem, itemKey);
-              const parentArray = parentControl as FormArray;
-                if (parentArray.controls.length === 0 || parentArray.controls[parentArray.controls.length - 1].parent){
-                  (parentControl as FormArray).controls.push(control);
-                }
-                result = control;
-            } else {
-              console.log("nope 2");
-            }
+          console.log("other:", itemKey, item);
+          result = this.createItemInForm(item, itemKey);
+          if (parentControl instanceof FormGroup) {
+            (parentControl as FormGroup).addControl(itemKey, result);
+          }  else {
+              (parentControl as FormArray).controls.push(result);
+          }
         }
-      }
-      return result;
+    }
+    return result;
   }
 
   createItemInForm(configItem: ModuleConfig, itemKey: string): AbstractControl{

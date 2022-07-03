@@ -88,11 +88,9 @@ export class DashboardComponent implements OnChanges {
         const array = conf[key as keyof ModuleConfig] as Array<any>;
         array.forEach(element =>{
           this.processNestedConfig(element, true);
-          this.configItems[key]=conf[key as keyof ModuleConfig];
         });
       } else if (typeof conf[key as keyof ModuleConfig] === 'object') {
           this.processNestedConfig(conf[key as keyof ModuleConfig] as ModuleConfig, true);
-          this.configItems[key]=conf[key as keyof ModuleConfig];
       }
       if(!isNested)
       {
