@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>{{ title }}</h1>
 
 <div mat-dialog-content>
-  <div [formGroup]="configForm">
+  <form id="form" [formGroup]="configForm" (ngSubmit)="onSubmit()">
     <ng-template #nodeTemplateRef let-node>
       <div>
         <div *ngIf="node.children.length">
@@ -30,7 +30,11 @@
           </mat-form-field>
 
           <ng-container *ngIf="node.type === 'bool'">
-            <mat-label [for]="node.key" style="white-space: pre-line">
+            <mat-label
+              [for]="node.key"
+              style="white-space: pre-line"
+              class="labelStyle"
+            >
               {{ node.key }}
             </mat-label>
             <br />
@@ -38,9 +42,14 @@
               [for]="node.key"
               [formControl]="configForm.get(node.fullKey)"
               class="form-control"
+              class="labelStyle"
             >
-              <mat-radio-button [value]="true">Yes</mat-radio-button>
-              <mat-radio-button [value]="false">No</mat-radio-button>
+              <mat-radio-button [value]="true" style="margin: 5px"
+                >Yes</mat-radio-button
+              >
+              <mat-radio-button [value]="false" style="margin: 5px"
+                >No</mat-radio-button
+              >
             </mat-radio-group>
           </ng-container>
 
@@ -65,10 +74,10 @@
       [ngTemplateOutletContext]="{ $implicit: myKey }"
     >
     </ng-template>
-  </div>
+  </form>
 </div>
 
 <div mat-dialog-actions>
-  <button mat-button (click)="onSaveClicked()" cdkFocusInitial>Save</button>
+  <button mat-button type="submit" form="form" cdkFocusInitial>Save</button>
   <button mat-button [mat-dialog-close]>Cancel</button>
 </div>

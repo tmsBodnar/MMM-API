@@ -37,14 +37,12 @@ export class EditDialogComponent implements OnInit {
       this.keys,
       null
     );
-    console.log(this.configForm);
-    console.log(this.keys);
   }
 
   ngOnInit(): void {}
 
-  onSaveClicked() {
-    this.setModuleConfigFromForm(this.configItems, this.configForm, this.keys);
+  onSubmit() {
+    this.setModuleConfigFromForm(this.configItems, this.configForm);
     this.dialogRef.close(this.configItems);
   }
 
@@ -58,7 +56,6 @@ export class EditDialogComponent implements OnInit {
     keys: any[],
     parent: any
   ): AbstractControl | undefined {
-    console.log(configItem);
     let result = undefined;
     for (let indx = 0; indx < Object.keys(configItem).length; indx++) {
       const itemKey = Object.keys(configItem)[indx];
@@ -133,70 +130,22 @@ export class EditDialogComponent implements OnInit {
 
   setModuleConfigFromForm(
     configItem: ModuleConfig,
-    configForms: AbstractControl,
-    keys: string[],
-    isNested: boolean = false
+    configForm: AbstractControl
   ) {
-    let isFormControl = configForms instanceof FormControl;
-    let isFormArray = configForms instanceof FormArray;
-    if (isFormArray) {
-      const arrayControls = (configForms as FormArray).controls;
-      for (let indx = 0; indx < arrayControls.length; indx++) {
-        const configKeys = Object.keys(configItem);
-        for (let i = 0; i < configKeys.length; i++) {
-          const isSubArray = arrayControls[indx] instanceof FormArray;
-          const isSubForm = arrayControls[indx] instanceof FormControl;
-          if (isSubForm) {
-            const subForm = arrayControls[indx] as FormControl;
-            var key = keys[indx];
-            if (typeof configItem[configKeys[i]] === 'object') {
-              if (key.indexOf('#') > -1) {
-                key = key.slice(key.indexOf('#') + 1, key.indexOf(':'));
-                if (configKeys[i] === key) {
-                  this.setModuleConfigFromForm(
-                    configItem[configKeys[i]] as ModuleConfig,
-                    subForm,
-                    keys
-                  );
-                }
-              }
-            } else if (configKeys[i] === key) {
-              configItem[configKeys[i]] = subForm.value;
-              break;
-            }
-            if (isNested) {
-              const subConfigKeys = Object.keys(configItem);
-              for (let j = 0; j < subConfigKeys.length; j++) {
-                if (typeof configItem[subConfigKeys[j]] === 'object') {
-                  let subItem = configItem[subConfigKeys[j]] as ModuleConfig;
-                  const subItemKeys = Object.keys(subItem);
-                  for (let k = 0; k < subItemKeys.length; k++) {
-                    if ((subItemKeys[k] = keys[indx])) {
-                      this.setModuleConfigFromForm(
-                        subItem[k] as ModuleConfig,
-                        subForm,
-                        keys
-                      );
-                    }
-                  }
-                }
-              }
-            }
-          }
-          if (isSubArray) {
-            const subArray = arrayControls[indx] as FormControl;
-            this.setModuleConfigFromForm(
-              configItem[configKeys[indx]] as ModuleConfig,
-              subArray,
-              this.subKeys,
-              true
-            );
-          }
-        }
+    for (let indx = 0; indx < Object.keys(configItem).length; indx++) {
+      const itemKey = Object.keys(configItem)[indx];
+      const item = configItem[itemKey] as ModuleConfig;
+      if (Array.isArray(item)) {
+        const form = configForm as FormGroup;
+        this.setModuleConfigFromForm(item, form.controls[itemKey]);
+      } else if (typeof item === 'object') {
+        const form = configForm as FormGroup;
+        this.setModuleConfigFromForm(item, form.controls[itemKey]);
+      } else {
+        const form = configForm as FormGroup;
+        const key = itemKey;
+        configItem[itemKey] = form.controls[itemKey]?.value;
       }
-    } else if (isFormControl) {
-      const control = configForms as FormControl;
-      configItem = control.value;
     }
   }
 }
