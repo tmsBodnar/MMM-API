@@ -1,40 +1,72 @@
-<h1 mat-dialog-title>{{title}}</h1>
+<h1 mat-dialog-title>{{ title }}</h1>
 
 <div mat-dialog-content>
   <div [formGroup]="configForm">
-    <div>
-     <!--  <ng-container *ngFor="let item of configForm" >
-      <ng-container formArrayName="configItemForms">
-        <ng-container *ngFor="let configItemForm of configItemForms.controls; let i = index">
-          <ng-container *ngIf="(configItemForm.controls && configItemForm.controls.length > 0)">
-            <div id="arrayTitle">{{keys[i]}}
-              <ng-container *ngFor="let subconfigItemForm of configItemForm.controls; let j = index">
-                <mat-form-field appearance="fill"
-                  [ngClass]=" j > 0 &&  i < tags.length && tags[j] === tags[j - 1] || tags[j] === tags[j + 1] ? 'inOne': ''"
-                  [ngStyle]="(j > 0 &&  i < tags.length && tags[j] === tags[j - 1]) ? {'margin-bottom':  '0.5em'} : {'margin-bottom':  '0.em'}">
-                  <mat-label>{{subKeys[j]}}</mat-label>
-                  <input matInput
-                        [formControl]="configItemForm.controls[j]"
-                        placeholder="please enter {{subKeys[j]}}">
-                </mat-form-field>
-              </ng-container>
-            </div>
-          </ng-container> 
-          <ng-container *ngIf="!configItemForm.controls">
-            <mat-form-field appearance="fill">
-              <mat-label>{{keys[i]}}</mat-label> 
-              <input matInput
-                    [formControl]="item"
-                    placeholder="plh">
-            </mat-form-field>
+    <ng-template #nodeTemplateRef let-node>
+      <div>
+        <div *ngIf="node.children.length">
+          <ng-template
+            ngFor
+            [ngForOf]="node.children"
+            [ngForTemplate]="nodeTemplateRef"
+          >
+          </ng-template>
+        </div>
+        <div *ngIf="!node.children.length">
+          <mat-label class="labelStyle">
+            {{ node.parent | labelformatter }}
+          </mat-label>
+
+          <mat-form-field *ngIf="node.type === 'str'">
+            <mat-label [for]="node.key" style="white-space: pre-line">
+              {{ node.key }}
+            </mat-label>
+            <input
+              matInput
+              type="text"
+              [formControl]="configForm.get(node.fullKey)"
+              class="form-control"
+            />
+          </mat-form-field>
+
+          <ng-container *ngIf="node.type === 'bool'">
+            <mat-label [for]="node.key" style="white-space: pre-line">
+              {{ node.key }}
+            </mat-label>
+            <br />
+            <mat-radio-group
+              [for]="node.key"
+              [formControl]="configForm.get(node.fullKey)"
+              class="form-control"
+            >
+              <mat-radio-button [value]="true">Yes</mat-radio-button>
+              <mat-radio-button [value]="false">No</mat-radio-button>
+            </mat-radio-group>
           </ng-container>
-         </ng-container>
-       </ng-container> 
-      </ng-container>-->
-    </div>
+
+          <mat-form-field *ngIf="node.type === 'num'">
+            <mat-label [for]="node.key" style="white-space: pre-line">
+              {{ node.key }}
+            </mat-label>
+            <input
+              matInput
+              type="number"
+              [formControl]="configForm.get(node.fullKey)"
+              class="form-control"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template
+      *ngFor="let myKey of keys"
+      [ngTemplateOutlet]="nodeTemplateRef"
+      [ngTemplateOutletContext]="{ $implicit: myKey }"
+    >
+    </ng-template>
   </div>
 </div>
-
 
 <div mat-dialog-actions>
   <button mat-button (click)="onSaveClicked()" cdkFocusInitial>Save</button>

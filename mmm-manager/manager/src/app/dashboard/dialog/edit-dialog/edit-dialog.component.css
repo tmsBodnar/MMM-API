@@ -1,6 +1,13 @@
-.inOne{
-    background: #eeeeee;
+.inOne {
+  background: #eeeeee;
 }
-:host::ng-deep.mat-dialog-content{
-    margin: auto !important;
+:host::ng-deep.mat-dialog-content {
+  margin: auto !important;
+}
+.labelStyle {
+  font-weight: 100;
+  font-size: smaller;
+  transform: translateY(-1.28125em) scale(0.75) perspective(100px)
+    translateZ(0.001px);
+  color: rgba(0, 0, 0, 0.54);
 }
