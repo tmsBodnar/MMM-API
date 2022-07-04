@@ -10,7 +10,6 @@ export class LabelformatterPipe implements PipeTransform {
     let resultOfIndexSearch = this.regexForIndex.exec(value);
     if (resultOfIndexSearch) {
       const index = Number(value.charAt(resultOfIndexSearch.index + 1)) + 1;
-      console.log(index, value.charAt(resultOfIndexSearch.index + 1));
       value = value.replace(
         value.charAt(resultOfIndexSearch.index + 1),
         index + ''

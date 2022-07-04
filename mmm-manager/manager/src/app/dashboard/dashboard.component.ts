@@ -53,11 +53,13 @@ export class DashboardComponent implements OnChanges {
     });
     dialogRef.afterClosed().subscribe((result) => {
       const res = result as ModuleConfig;
-      this.setModuleConfigFromResult(res);
+      if (res) {
+        this.setModuleConfigFromResult(res, module);
+      }
     });
   }
 
-  private calculatePositions() {
+  calculatePositions() {
     this.modules.forEach((module) => {
       const pos = Position.positions.filter((p) => p.name === module.position);
       if (pos.length > 0) {
@@ -78,8 +80,16 @@ export class DashboardComponent implements OnChanges {
     }
   }
 
-  private setModuleConfigFromResult(res: ModuleConfig) {
+  private setModuleConfigFromResult(res: ModuleConfig, module: Module) {
     console.log(res);
+    if (res['header'] !== '' && res['header'] !== undefined) {
+      module['header'] = res['header'] as string;
+    }
+    delete res['header'];
+    if (module.config !== undefined) {
+      module.config = res;
+    }
+    console.log(this.modules);
   }
 
   private processNestedConfig(conf: ModuleConfig, isNested: boolean) {

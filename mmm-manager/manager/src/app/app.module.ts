@@ -25,6 +25,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LabelformatterPipe } from './pipes/labelformatter.pipe';
 import { MatRadioModule } from '@angular/material/radio';
+import { RemoveDialogComponent } from './navigation/remove-dialog/remove-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { MatRadioModule } from '@angular/material/radio';
     ModulePipe,
     EditDialogComponent,
     LabelformatterPipe,
+    RemoveDialogComponent,
   ],
   imports: [
     BrowserModule,

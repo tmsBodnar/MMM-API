@@ -1,0 +1,14 @@
+<mat-selection-list
+  #modulesList
+  [(ngModel)]="selectedOptions"
+  (ngModelChange)="onNgModelChange($event)"
+>
+  <mat-list-option *ngFor="let module of modules" [value]="module">
+    {{ module.module }}
+  </mat-list-option>
+</mat-selection-list>
+
+<div mat-dialog-actions>
+  <button mat-button (click)="save()" cdkFocusInitial>Save</button>
+  <button mat-button [mat-dialog-close]>Cancel</button>
+</div>
