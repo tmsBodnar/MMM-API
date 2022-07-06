@@ -27,7 +27,10 @@ app.put("/api/config", (req, res) => {
   let config = req.body;
   const origConfig = fs.readFileSync(configPath, "utf8");
   let regex = new RegExp(/(?<=let config = )([\S\s]*?)(?=;\n\n)/);
-  const newConfig = origConfig.replace(regex, JSON.stringify(config));
+  const newConfig = origConfig.replace(
+    regex,
+    JSON.stringify(config, null, "\t")
+  );
   fs.writeFileSync(configPath, newConfig, "utf-8");
   const readedConfig = fs.readFileSync(configPath, "utf8");
   let configRes = eval(readedConfig);
