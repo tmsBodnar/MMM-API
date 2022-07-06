@@ -1,19 +1,27 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Config } from '../models/Config';
-import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
+  constructor(private http: HttpClient) {}
 
-  constructor(
-    private http: HttpClient
-  ) { }
-
-  getModules(): Observable<Config>{
+  getModules(): Observable<Config> {
     return this.http.get<Config>('http://localhost:3000/api/config').pipe();
+  }
+
+  saveConfig(config: Config) {
+    console.log(config);
+    this.http
+      .put<Config>('http://localhost:3000/api/config', config)
+      .subscribe({
+        next: (data) => {},
+        error: (error) => {
+          console.error('There was an error!', error);
+        },
+      });
   }
 }

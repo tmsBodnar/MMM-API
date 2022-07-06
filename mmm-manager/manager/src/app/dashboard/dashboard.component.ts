@@ -71,7 +71,7 @@ export class DashboardComponent implements OnChanges {
     this.positions.forEach((position) => {
       position.modules = [];
       const mods = this.modules.filter((m) => {
-        return m.pos.name === position.name;
+        return m.pos?.name === position.name;
       });
       position.modules = mods;
     });

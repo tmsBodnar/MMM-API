@@ -6,5 +6,5 @@ export interface Module {
   position: string;
   header?: string;
   config: ModuleConfig;
-  pos: Position;
+  pos?: Position;
 }
