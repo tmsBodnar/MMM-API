@@ -13,15 +13,9 @@ export class ApiService {
     return this.http.get<Config>('http://localhost:3000/api/config').pipe();
   }
 
-  saveConfig(config: Config) {
-    console.log(config);
-    this.http
+  saveConfig(config: Config): Observable<Config> {
+    return this.http
       .put<Config>('http://localhost:3000/api/config', config)
-      .subscribe({
-        next: (data) => {},
-        error: (error) => {
-          console.error('There was an error!', error);
-        },
-      });
+      .pipe();
   }
 }

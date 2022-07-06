@@ -26,12 +26,8 @@ app.get("/api/config", (req, res) => {
 app.put("/api/config", (req, res) => {
   let config = req.body;
   const origConfig = fs.readFileSync(configPath, "utf8");
-  console.log(origConfig);
   let regex = new RegExp(/(?<=let config = )([\S\s]*?)(?=;\n\n)/);
-  let match = origConfig.match(regex);
-  console.log(match);
   const newConfig = origConfig.replace(regex, JSON.stringify(config));
-  console.log(newConfig);
   fs.writeFileSync(configPath, newConfig, "utf-8");
   const readedConfig = fs.readFileSync(configPath, "utf8");
   let configRes = eval(readedConfig);
