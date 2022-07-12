@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
-import { ApiService } from '../services/api.service';
+import { ApiService } from '../services/api/api.service';
 import { Config } from '../models/Config';
 import { Module } from '../models/Module';
 import { DashboardComponent } from '../dashboard/dashboard.component';

@@ -6,8 +6,13 @@ import {
   FormControl,
   FormGroup,
 } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { ModuleConfig } from 'src/app/models/ModuleConfig';
+import { FormCreatorService } from 'src/app/services/form/form-creator.service';
 
 @Component({
   selector: 'app-edit-dialog',
@@ -21,17 +26,22 @@ export class EditDialogComponent implements OnInit {
   tags: number[] = [];
   title: string;
   keys: any[] = [];
+  isAddNewItem = false;
+  selectedArrayItem: ModuleConfig = {};
+  selectedKey: string = '';
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: { config: ModuleConfig; title: string },
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<EditDialogComponent>
+    public dialogRef: MatDialogRef<EditDialogComponent>,
+    private formService: FormCreatorService
   ) {
+    dialogRef.disableClose = true;
     this.configItems = data.config;
     this.title = data.title;
     this.configForm = this.fb.group({});
-    this.createFormFromConfigItem(
+    this.formService.createFormFromConfigItem(
       this.configItems,
       this.configForm,
       this.keys,
@@ -42,110 +52,53 @@ export class EditDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit() {
-    this.setModuleConfigFromForm(this.configItems, this.configForm);
-    this.dialogRef.close(this.configItems);
+    if (!this.isAddNewItem) {
+      this.formService.setModuleConfigFromForm(
+        this.configItems,
+        this.configForm
+      );
+      this.dialogRef.close(this.configItems);
+    } else {
+      this.formService.setModuleConfigFromForm(
+        this.selectedArrayItem,
+        this.configForm
+      );
+      (this.configItems[this.selectedKey] as Array<ModuleConfig>).push(
+        this.selectedArrayItem
+      );
+      console.log(this.configItems);
+      this.keys = [];
+      this.configForm = this.fb.group({});
+      this.formService.createFormFromConfigItem(
+        this.configItems,
+        this.configForm,
+        this.keys,
+        null
+      );
+      this.isAddNewItem = false;
+    }
   }
 
   getNodeKey(node: any) {
     return node.fullKey;
   }
 
-  createFormFromConfigItem(
-    configItem: ModuleConfig,
-    parentControl: AbstractControl,
-    keys: any[],
-    parent: any
-  ): AbstractControl | undefined {
-    let result = undefined;
-    for (let indx = 0; indx < Object.keys(configItem).length; indx++) {
-      const itemKey = Object.keys(configItem)[indx];
-      const item = configItem[itemKey] as ModuleConfig;
-      if (Array.isArray(item)) {
-        const array = this.fb.array([]);
-        keys.push({
-          key: itemKey,
-          children: [],
-          fullKey: parent ? parent.fullKey + '.' + itemKey : itemKey,
-          parent: parent ? parent.fullKey : '',
-        });
-        result = this.createFormFromConfigItem(
-          item,
-          array,
-          keys[keys.length - 1].children,
-          keys[keys.length - 1]
-        );
-        if (parentControl instanceof FormGroup) {
-          (parentControl as FormGroup).addControl(itemKey, array);
-        } else {
-          (parentControl as FormArray).controls.push(array);
-        }
-      } else if (typeof item === 'object') {
-        const group = this.fb.group({});
-        keys.push({
-          key: itemKey,
-          children: [],
-          fullKey: parent ? parent.fullKey + '.' + itemKey : itemKey,
-          parent: parent ? parent.fullKey : '',
-        });
-        result = this.createFormFromConfigItem(
-          item,
-          group,
-          keys[keys.length - 1].children,
-          keys[keys.length - 1]
-        );
-
-        if (parentControl instanceof FormGroup) {
-          (parentControl as FormGroup).addControl(itemKey, group);
-        } else {
-          (parentControl as FormArray).controls.push(group);
-        }
-      } else {
-        const isBoolean = typeof item === 'boolean';
-        const isString = typeof item === 'string';
-        const type = isBoolean ? 'bool' : isString ? 'str' : 'num';
-        keys.push({
-          key: itemKey,
-          children: [],
-          fullKey: parent ? parent.fullKey + '.' + itemKey : itemKey,
-          parent: parent ? parent.fullKey : '',
-          type: type,
-        });
-        result = this.createItemInForm(item, itemKey);
-
-        if (parentControl instanceof FormGroup) {
-          (parentControl as FormGroup).addControl(itemKey, result);
-        } else {
-          (parentControl as FormArray).controls.push(result);
-        }
-      }
+  addNewItemClicked(key: string) {
+    this.isAddNewItem = true;
+    this.selectedKey = key;
+    let items = this.configItems[key] as Array<ModuleConfig>;
+    for (let indx = 0; indx < Object.keys(items[0]).length; indx++) {
+      const itemKey = Object.keys(items[0])[indx];
+      this.selectedArrayItem[itemKey] = '';
     }
-    return result;
-  }
-
-  createItemInForm(configItem: ModuleConfig, itemKey: string): AbstractControl {
-    let contr = new FormControl([configItem[itemKey as keyof ModuleConfig]]);
-    contr.patchValue(configItem);
-    return contr;
-  }
-
-  setModuleConfigFromForm(
-    configItem: ModuleConfig,
-    configForm: AbstractControl
-  ) {
-    for (let indx = 0; indx < Object.keys(configItem).length; indx++) {
-      const itemKey = Object.keys(configItem)[indx];
-      const item = configItem[itemKey] as ModuleConfig;
-      if (Array.isArray(item)) {
-        const form = configForm as FormGroup;
-        this.setModuleConfigFromForm(item, form.controls[itemKey]);
-      } else if (typeof item === 'object') {
-        const form = configForm as FormGroup;
-        this.setModuleConfigFromForm(item, form.controls[itemKey]);
-      } else {
-        const form = configForm as FormGroup;
-        const key = itemKey;
-        configItem[itemKey] = form.controls[itemKey]?.value;
-      }
-    }
+    this.title = 'Add item to ' + key;
+    this.keys = [];
+    this.configForm = this.fb.group({});
+    this.formService.createFormFromConfigItem(
+      this.selectedArrayItem,
+      this.configForm,
+      this.keys,
+      null
+    );
   }
 }

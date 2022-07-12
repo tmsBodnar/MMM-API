@@ -50,6 +50,8 @@ export class DashboardComponent implements OnChanges {
     }
     const dialogRef = this.dialogRef.open(EditDialogComponent, {
       data: { config: this.configItems, title: module.module },
+      disableClose: true,
+      closeOnNavigation: false,
     });
     dialogRef.afterClosed().subscribe((result) => {
       const res = result as ModuleConfig;
@@ -81,7 +83,6 @@ export class DashboardComponent implements OnChanges {
   }
 
   private setModuleConfigFromResult(res: ModuleConfig, module: Module) {
-    console.log(res);
     if (res['header'] !== '' && res['header'] !== undefined) {
       module['header'] = res['header'] as string;
     }
@@ -89,7 +90,6 @@ export class DashboardComponent implements OnChanges {
     if (module.config !== undefined) {
       module.config = res;
     }
-    console.log(this.modules);
   }
 
   private processNestedConfig(conf: ModuleConfig, isNested: boolean) {

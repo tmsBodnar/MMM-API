@@ -12,6 +12,7 @@
           >
           </ng-template>
         </div>
+
         <div *ngIf="!node.children.length">
           <mat-label class="labelStyle">
             {{ node.parent | labelformatter }}
@@ -66,6 +67,11 @@
           </mat-form-field>
         </div>
       </div>
+      <div *ngIf="node.plus">
+        <button mat-raised-button (click)="addNewItemClicked(node.key)">
+          Add item to {{ node.key }}
+        </button>
+      </div>
     </ng-template>
 
     <ng-template
@@ -78,6 +84,14 @@
 </div>
 
 <div mat-dialog-actions>
-  <button mat-button type="submit" form="form" cdkFocusInitial>Save</button>
-  <button mat-button [mat-dialog-close]>Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    form="form"
+    cdkFocusInitial
+  >
+    Save
+  </button>
+  <button mat-raised-button [mat-dialog-close]>Cancel</button>
 </div>
